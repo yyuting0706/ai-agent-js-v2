@@ -20,11 +20,20 @@ import {
 export const DEFAULT_AGENT_MODEL = DEFAULT_MODEL;
 export const DEFAULT_AGENT_MODEL_SETTINGS = DEFAULT_MODEL_SETTINGS;
 
+export const defaultClassroomToolset = {
+  currentTime: currentTimeTool,
+  weather: weatherTool,
+  youbike: youbikeTool,
+  netflix: netflixTool,
+  pythonBook: pythonBookTool,
+};
+
 export async function buildClassroomAgent({
   model = DEFAULT_AGENT_MODEL,
   modelSettings = DEFAULT_AGENT_MODEL_SETTINGS,
   useMcp = true,
   memoryContext = "",
+  toolset = defaultClassroomToolset,
 } = {}) {
   const tenlongMcp = useMcp
     ? new MCPServerStdio({
@@ -60,7 +69,7 @@ export async function buildClassroomAgent({
     modelSettings,
     instructions: buildInstructions(teacherProfiles.python),
     handoffDescription: teacherProfiles.python.handoffDescription,
-    tools: [toAgentTool(pythonBookTool)],
+    tools: [toAgentTool(toolset.pythonBook)],
   });
 
   const homeroom = Agent.create({
@@ -69,10 +78,10 @@ export async function buildClassroomAgent({
     modelSettings,
     instructions: buildInstructions(classroomProfile, memoryContext),
     tools: [
-      toAgentTool(currentTimeTool),
-      toAgentTool(weatherTool),
-      toAgentTool(youbikeTool),
-      toAgentTool(netflixTool),
+      toAgentTool(toolset.currentTime),
+      toAgentTool(toolset.weather),
+      toAgentTool(toolset.youbike),
+      toAgentTool(toolset.netflix),
     ],
     handoffs: [phpTeacher, vueTeacher, pythonTeacher],
     ...(tenlongMcp && { mcpServers: [tenlongMcp] }),
