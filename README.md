@@ -3,8 +3,8 @@
 by eddie@5xcampus.com
 
 這是 v5 課程的完整實作 repo。全程使用 Node.js 22、OpenAI Node SDK v6
-的 Responses API、OpenAI Agents SDK、Qdrant 與 MCP；開發環境以 GitHub
-Codespaces 為主，不使用 StackBlitz。
+的 Responses API、OpenAI Agents SDK、Qdrant 與 MCP；開發環境使用 GitHub
+Codespaces。
 
 [在 GitHub Codespaces 開啟](https://codespaces.new/kaochenlong/ai-agent-js-v2)
 
@@ -26,6 +26,18 @@ Codespaces 為主，不使用 StackBlitz。
 
 API Key 請放在 `.env` 或 Codespaces secrets，不要印到終端機，也不要提交到
 Git。
+
+## 課程模型
+
+| 分支 | 生成模型 | 用途 |
+|------|----------|------|
+| `1.2-openai-api`～`3.2-rag-search-text` | `gpt-5.6-luna` | API 基礎、Tool Calling、embedding 與向量搜尋 |
+| `3.3-rag-tool`～`6.3-capstone-course-advisor` | `gpt-5.4-mini` | RAG Agent、handoff、評估、記憶與 planning |
+
+3.1、3.2 的 RAG 流程只建立向量與執行搜尋，embedding 一律使用
+`text-embedding-3-small`。從 3.3 開始，生成模型還要選擇工具、理解檢索結果並
+產生有根據的答案，因此切換成 `gpt-5.4-mini`，reasoning effort 從 `low`
+開始。完成版把這組分段設定集中在 `lib/models.js`。
 
 ## 教學分支
 
