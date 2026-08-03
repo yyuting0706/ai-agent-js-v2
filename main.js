@@ -2,10 +2,11 @@ import { input } from "@inquirer/prompts";
 import { run } from "@openai/agents";
 import { spinner } from "./utils/spinner.js";
 import { buildClassroomAgent } from "./agents/classroom.js";
+import { createConversationMemory } from "./memory/store.js";
+import { summarizeConversation } from "./memory/summarize.js";
 
 const classroom = await buildClassroomAgent();
-
-let thread = [];
+const memory = await createConversationMemory();
 
 try {
   while (true) {
@@ -14,6 +15,15 @@ try {
     ).trim();
 
     if (userInput === "") continue;
+    if (userInput === ":memory") {
+      console.log(memory.describe());
+      continue;
+    }
+    if (userInput === ":clear") {
+      await memory.clear();
+      console.log("對話記憶已清除");
+      continue;
+    }
     if (userInput.toLowerCase() === "exit") {
       console.log("再會~");
       break;
@@ -25,18 +35,27 @@ try {
     try {
       result = await run(
         classroom.agent,
-        thread.concat({ role: "user", content: userInput }),
+        memory.buildInput(userInput),
         { maxTurns: 8 },
       );
     } finally {
       spin.stop();
     }
 
-    thread = result.history;
+    await memory.recordTurn(userInput, result.output);
 
     console.log(`\n[由 ${result.lastAgent?.name ?? "班導師"} 回答]`);
     console.log(result.finalOutput);
     console.log();
+
+    if (memory.shouldCompress()) {
+      const compactSpin = spinner("壓縮對話記憶中...").start();
+      try {
+        await memory.compact(summarizeConversation);
+      } finally {
+        compactSpin.stop();
+      }
+    }
   }
 } catch (err) {
   if (err.name === "ExitPromptError") {
