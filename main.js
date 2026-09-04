@@ -1,12 +1,9 @@
 import { input } from "@inquirer/prompts";
-import OpenAI from "openai";
-import { OPENAI_API_KEY } from "./config.js";
-import { initMessage, addMessage, getMessages } from "./db/messages.js";
-
-const client = new OpenAI({ apiKey: OPENAI_API_KEY });
+import { initMessage } from "./db/messages.js";
+import { askAssistant } from "./chat-manager.js";
 
 await initMessage(
-  "你是一位專門講關於貓的笑話大師，請用繁體中文回答。請用幽默有趣的方式回應。"
+  "你是一位數學助理，請用繁體中文回答。遇到需要計算的問題時，使用 calculate 工具取得正確結果。"
 );
 
 try {
@@ -21,17 +18,8 @@ try {
       break;
     }
 
-    await addMessage(userQuestion);
-
-    const response = await client.responses.create({
-      model: "gpt-5.6-luna",
-      input: getMessages(),
-    });
-
-    const content = response.output_text;
+    const content = await askAssistant(userQuestion);
     console.log(content);
-
-    await addMessage(content, "assistant");
   }
 } catch (err) {
   if (err.name === "ExitPromptError") {
