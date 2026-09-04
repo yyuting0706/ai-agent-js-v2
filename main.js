@@ -1,16 +1,20 @@
 import { input } from "@inquirer/prompts";
-import OpenAI from "openai";
-import { OPENAI_API_KEY } from "./config.js";
+import { ChatManager } from "./chat-manager.js";
 
-const client = new OpenAI({ apiKey: OPENAI_API_KEY });
+const chatManager = new ChatManager();
+console.log("英文單字小老師已上線！輸入 exit 或 quit 結束對話。\n");
 
-const userQuestion = await input({ message: "請輸入你的問題：" });
+while (true) {
+  const userQuestion = await input({ message: "你：" });
 
-const response = await client.responses.create({
-  model: "gpt-5.6-luna",
-  instructions:
-    "你是一位專門講關於貓的笑話大師，請用繁體中文回答。請用幽默有趣的方式回應。",
-  input: userQuestion,
-});
+  if (["exit", "quit"].includes(userQuestion.trim().toLowerCase())) {
+    console.log("英文單字小老師：下次見！");
+    break;
+  }
 
-console.log(response.output_text);
+  try {
+    console.log(`英文單字小老師：${await chatManager.sendMessage(userQuestion)}\n`);
+  } catch (error) {
+    console.error("無法取得回覆，請確認 OPENAI_API_KEY、網路與模型設定。", error.message);
+  }
+}
