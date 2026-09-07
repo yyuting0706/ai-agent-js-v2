@@ -5,7 +5,9 @@
   "type": "module",
   "main": "main.js",
   "scripts": {
-    "start": "node main.js"
+    "start": "node main.js",
+    "coffee:init": "node scripts/init-coffee.js",
+    "coffee:search": "node scripts/search-coffee.js"
   },
   "engines": {
     "node": ">=22.0.0"
