@@ -38,3 +38,20 @@ npm start
 
 章節 3 起另需 Qdrant；天氣工具另需 OpenWeather API key。金鑰只放在
 `.env` 或 Codespaces secrets，不要提交到 Git。
+
+## 天氣與時間工具驗收
+
+目前主程式的「班導師」已註冊 `get_current_time` 與 `get_weather`，並要求
+Agents SDK 依問題呼叫工具。啟動程式後輸入以下問題，可確認工具選擇與結果整合：
+
+| 測試問題 | 預期工具呼叫 | 執行結果 |
+|---|---|---|
+| 現在幾點？ | `get_current_time` | 回傳台灣目前時間 |
+| 台北天氣如何？ | `get_weather({ city: "Taipei" })` | 回傳台北溫度、濕度與天氣狀況 |
+| 現在幾點？台北天氣好嗎？ | `get_current_time`、`get_weather({ city: "Taipei" })` | 同時取得兩項資料並以繁體中文整合回答 |
+
+執行前請先在 `.env` 設定 `OPENWEATHER_API_KEY`，再執行：
+
+```bash
+npm start
+```
